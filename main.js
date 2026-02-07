@@ -1,3 +1,105 @@
+class PointerLockControls extends THREE.EventDispatcher {
+  constructor(camera, domElement) {
+    super();
+    if (domElement === undefined) {
+      domElement = document.body;
+    }
+
+    this.domElement = domElement;
+    this.isLocked = false;
+    this.minPolarAngle = 0;
+    this.maxPolarAngle = Math.PI;
+    this.pointerSpeed = 1.0;
+
+    camera.rotation.set(0, 0, 0);
+
+    const scope = this;
+    const euler = new THREE.Euler(0, 0, 0, "YXZ");
+    const PI_2 = Math.PI / 2;
+    let vec = new THREE.Vector3();
+    let changeEvent = { type: "change" };
+    let lockEvent = { type: "lock" };
+    let unlockEvent = { type: "unlock" };
+
+    function onMouseMove(event) {
+      if (scope.isLocked === false) return;
+
+      const movementX = event.movementX || 0;
+      const movementY = event.movementY || 0;
+
+      euler.setFromQuaternion(camera.quaternion);
+      euler.y -= movementX * 0.002 * scope.pointerSpeed;
+      euler.x -= movementY * 0.002 * scope.pointerSpeed;
+      euler.x = Math.max(PI_2 - scope.maxPolarAngle, Math.min(PI_2 - scope.minPolarAngle, euler.x));
+      camera.quaternion.setFromEuler(euler);
+
+      scope.dispatchEvent(changeEvent);
+    }
+
+    function onPointerlockChange() {
+      if (scope.domElement.ownerDocument.pointerLockElement === scope.domElement) {
+        scope.dispatchEvent(lockEvent);
+        scope.isLocked = true;
+      } else {
+        scope.dispatchEvent(unlockEvent);
+        scope.isLocked = false;
+      }
+    }
+
+    function onPointerlockError() {
+      console.error("PointerLockControls: Unable to use Pointer Lock API");
+    }
+
+    this.connect = function () {
+      scope.domElement.ownerDocument.addEventListener("mousemove", onMouseMove);
+      scope.domElement.ownerDocument.addEventListener("pointerlockchange", onPointerlockChange);
+      scope.domElement.ownerDocument.addEventListener("pointerlockerror", onPointerlockError);
+    };
+
+    this.disconnect = function () {
+      scope.domElement.ownerDocument.removeEventListener("mousemove", onMouseMove);
+      scope.domElement.ownerDocument.removeEventListener("pointerlockchange", onPointerlockChange);
+      scope.domElement.ownerDocument.removeEventListener("pointerlockerror", onPointerlockError);
+    };
+
+    this.dispose = function () {
+      scope.disconnect();
+    };
+
+    this.getObject = function () {
+      return camera;
+    };
+
+    this.getDirection = function () {
+      const direction = new THREE.Vector3(0, 0, -1);
+      return function (v) {
+        return v.copy(direction).applyQuaternion(camera.quaternion);
+      };
+    }();
+
+    this.moveForward = function (distance) {
+      vec.setFromMatrixColumn(camera.matrix, 0);
+      vec.crossVectors(camera.up, vec);
+      camera.position.addScaledVector(vec, distance);
+    };
+
+    this.moveRight = function (distance) {
+      vec.setFromMatrixColumn(camera.matrix, 0);
+      camera.position.addScaledVector(vec, distance);
+    };
+
+    this.lock = function () {
+      scope.domElement.requestPointerLock();
+    };
+
+    this.unlock = function () {
+      scope.domElement.ownerDocument.exitPointerLock();
+    };
+
+    this.connect();
+  }
+}
+
 const canvas = document.querySelector("#game");
 const menuScreen = document.querySelector("#menu-screen");
 const optionsScreen = document.querySelector("#options-screen");
@@ -47,7 +149,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-const controls = new THREE.PointerLockControls(camera, document.body);
+const controls = new PointerLockControls(camera, document.body);
 
 const player = {
   velocity: new THREE.Vector3(),
