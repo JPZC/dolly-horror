@@ -1,6 +1,3 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
-
 const canvas = document.querySelector("#game");
 const menuScreen = document.querySelector("#menu-screen");
 const optionsScreen = document.querySelector("#options-screen");
@@ -50,7 +47,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-const controls = new PointerLockControls(camera, document.body);
+const controls = new THREE.PointerLockControls(camera, document.body);
 
 const player = {
   velocity: new THREE.Vector3(),
