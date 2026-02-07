@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dolly Horror - Bosque Oscuro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="menu-screen" class="screen active">
+    <div class="panel">
+      <h1>DOLLY HORROR</h1>
+      <p class="subtitle">Bosque oscuro, niebla pesada y algo te sigue...</p>
+      <button id="start-btn">Iniciar</button>
+      <button id="options-btn">Opciones</button>
+      <button id="credits-btn">Créditos</button>
+    </div>
+  </div>
+
+  <div id="options-screen" class="screen">
+    <div class="panel">
+      <h2>Opciones</h2>
+      <label>
+        Sensibilidad mouse
+        <input id="sensitivity" type="range" min="0.2" max="2" step="0.1" value="1" />
+      </label>
+      <label>
+        Volumen ambiente
+        <input id="ambience" type="range" min="0" max="1" step="0.05" value="0.5" />
+      </label>
+      <label>
+        Intensidad de niebla
+        <input id="fog" type="range" min="0.01" max="0.08" step="0.005" value="0.05" />
+      </label>
+      <button class="back-btn">Volver</button>
+    </div>
+  </div>
+
+  <div id="credits-screen" class="screen">
+    <div class="panel">
+      <h2>Créditos</h2>
+      <p>Diseño, código y assets procedurales: GPT-5.2-Codex.</p>
+      <p>Música/FX: Ambiencia generada con osciladores WebAudio.</p>
+      <button class="back-btn">Volver</button>
+    </div>
+  </div>
+
+  <canvas id="game"></canvas>
+
+  <div id="hud">
+    <div id="top-bar">
+      <div id="objective">
+        <h3>Objetivos</h3>
+        <ul>
+          <li data-key="mapa">Mapa viejo</li>
+          <li data-key="amuleto">Amuleto</li>
+          <li data-key="llave">Llave oxidada</li>
+        </ul>
+      </div>
+      <div id="status">
+        <div class="status-row">
+          <span>Salud</span>
+          <div class="bar"><div id="health-bar"></div></div>
+        </div>
+        <div class="status-row">
+          <span>Miedo</span>
+          <div class="bar"><div id="fear-bar"></div></div>
+        </div>
+        <div class="status-row">
+          <span>Entidad</span>
+          <div class="bar"><div id="threat-bar"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="inventory">
+      <h3>Inventario</h3>
+      <div class="slots"></div>
+      <p class="hint">[E] Tomar / [Q] Soltar / [1-6] Seleccionar</p>
+    </div>
+
+    <div id="note-panel" class="panel">
+      <h2>Nota encontrada</h2>
+      <p>
+        "No mires atrás. La niebla es su piel. Encuentra el amuleto, el mapa y la llave
+        para salir del bosque."
+      </p>
+      <button id="close-note">Cerrar</button>
+    </div>
+
+    <div id="message"></div>
+  </div>
+
+  <div id="pause-screen" class="screen">
+    <div class="panel">
+      <h2>Pausa</h2>
+      <button id="resume-btn">Continuar</button>
+      <button id="return-btn">Menú principal</button>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
